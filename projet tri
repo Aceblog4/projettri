@@ -1,0 +1,416 @@
+import time
+import numpy as np
+import matplotlib.pyplot as plt
+import random
+from math import floor
+
+liste_temps_tri_rapide = []
+liste_temps_tri_fusion = []
+liste_temps_tri_par_tas = []
+arbre = []
+
+l = []
+liste_itteration = []
+liste_de_liste = []
+
+def meilleur_cas():
+    """Fonction qui crée des tableaux triés en ordre croissant"""
+    global l,liste_itteration,liste_de_liste
+
+    n = 0
+    for i in range(10):
+        n += 10
+        liste_itteration.append(n)
+        liiste = []
+        for j in range(liste_itteration[i]):
+            nombre_de_la_liste_liiste = j
+            liiste.append(nombre_de_la_liste_liiste)
+            if len(liiste) == liste_itteration[i]:
+                l = liiste
+                liste_de_liste.append(l)
+    print("Liste des listes non triés (meilleur cas)")
+    print(liste_de_liste)
+    print("Tableaux non triés (meilleur cas)")
+    for i in range(len(liste_de_liste)):
+        l = (liste_de_liste[i])
+        print(l)
+
+    print("\n\n\n")
+def cas_moyen():
+    """Fonction qui crée des tableaux plus ou moins triés"""
+    global l , liste_itteration,liste_de_liste
+    liste_itteration = []
+    liste_de_liste = []
+    n = 0
+    for i in range(10):
+        n += 10
+        liste_itteration.append(n)
+        liiste = []
+        for j in range(liste_itteration[i]):
+            nombre_de_la_liste_liiste = random.randint(0,liste_itteration[i])
+            liiste.append(nombre_de_la_liste_liiste)
+            if len(liiste) == liste_itteration[i]:
+                l = liiste
+                liste_de_liste.append(l)
+    print("Liste des listes non triés (cas moyen)")
+    print(liste_de_liste)
+    print("Tableaux non triés (cas moyen)")
+    for i in range(len(liste_de_liste)):
+        l= (liste_de_liste[i])
+        print(l)
+
+    print("\n\n\n")
+def pire_cas():
+    """Fonction qui crée des tableaux triés en ordre décroissants"""
+    global l,liste_itteration,liste_de_liste
+
+    n = 0
+    for i in range(10):
+        n += 10
+        liste_itteration.append(n)
+        liiste = []
+        for j in range(liste_itteration[i]):
+            nombre_de_la_liste_liiste = liste_itteration[i]-j
+            liiste.append(nombre_de_la_liste_liiste)
+            if len(liiste) == liste_itteration[i]:
+                l = liiste
+                liste_de_liste.append(l)
+    print("Liste des listes non triés (pire cas)")
+    print(liste_de_liste)
+    print("Tableaux non triés (pire cas)")
+    for i in range(len(liste_de_liste)):
+        l = (liste_de_liste[i])
+        print(l)
+
+    print("\n\n\n")
+
+def quicksort():
+    """Fonction de tri rapide
+    Cette fonction contient les fonctions partitionner et tri rapide"""
+    global liste_temps_tri_rapide        #pour modifier la liste des temps pris pour effectuer le tri rapide
+                                         #cette liste se trouve à la ligne n° 8 du programme
+    def partitionner(l, debut, fin):
+        """Fonction qui met le pivot à sa place ,
+           qui met tous les éléments inférieurs au pivot à gauche
+           et tous les éléments supérieurs à droite
+        """
+        valeur_pivot = l[fin]
+        indice_pivot = debut
+        # Fixer la valeur et l'indice du pivot
+
+        # parcourir les éléments
+        for i in range(debut, fin):
+            if l[i] <= valeur_pivot:
+                l[i], l[indice_pivot] = l[indice_pivot], l[i]
+                indice_pivot += 1
+
+        l[indice_pivot], l[fin] = l[fin], l[indice_pivot]
+        return indice_pivot
+
+        # retourner l'indice du pivot
+
+    def tri_rapide(l, debut=0, fin=None):
+        """Appelle la fonction partitionner et effectue le tri rapide """
+        if fin == None:
+            fin = len(l)-1
+
+        if fin > debut:
+            # condition de fin
+            pivot = partitionner(l, debut, fin)
+            # Chercher le pivot
+            # tri sur la partie gauche
+            tri_rapide(l, debut, pivot-1)
+            # tri sur la partie droite
+            tri_rapide(l, pivot+1, fin)
+
+
+    print("Tableau triés par tri rapide")
+    liste_temps_tri_rapide = []                   #liste qui sert à avoir les cordonnées y de la courbes du tri rapide
+    for i in range(len(liste_de_liste)):
+        l = liste_de_liste[i]
+        temps0,temps1 = 0,0
+        temps0 = time.perf_counter()
+
+        tri_rapide(l)
+        temps1 = time.perf_counter()
+        temps = temps1-temps0
+        print(f"Le temps mis pour trier {len(l)} éléments par tri rapide est de {temps}s")
+        print(l)
+        liste_temps_tri_rapide.append(temps)
+
+
+def mergesort():
+    """Fonction qui contient les fonctions :
+    - tri_fusion
+    - fusion
+    Cette fonction fait le tri fusion et mesure le temps pris pour le faire """
+
+    global liste_temps_tri_fusion        #pour modifier la liste des temps pris pour effectuer le tri fusion
+                                         #cette liste se trouve à la ligne n° 7 du programme
+    def tri_fusion(tableau):
+        """Fonction qui trie un tableau par tri fusion .C’est une fonction récursive qui appelle aussi la fonction fusion"""
+        if  len(tableau) <= 1:
+            return tableau
+        pivot = len(tableau)//2
+        tableau1 = tableau[:pivot]
+        tableau2 = tableau[pivot:]
+        gauche = tri_fusion(tableau1)
+        droite = tri_fusion(tableau2)
+        fusionne = fusion(gauche,droite)
+        return fusionne
+    #Tri fusion fonction de fusion de 2 listes
+    def fusion(tableau1,tableau2):
+        """Fusionne deux tableau en un seul """
+        indice_tableau1 = 0
+        indice_tableau2 = 0
+        taille_tableau1 = len(tableau1)
+        taille_tableau2 = len(tableau2)
+        tableau_fusionne = []
+        while indice_tableau1<taille_tableau1 and indice_tableau2<taille_tableau2:
+            if tableau1[indice_tableau1] < tableau2[indice_tableau2]:
+                tableau_fusionne.append(tableau1[indice_tableau1])
+                indice_tableau1 += 1
+            else:
+                tableau_fusionne.append(tableau2[indice_tableau2])
+                indice_tableau2 += 1
+        while indice_tableau1<taille_tableau1:
+            tableau_fusionne.append(tableau1[indice_tableau1])
+            indice_tableau1+=1
+        while indice_tableau2<taille_tableau2:
+            tableau_fusionne.append(tableau2[indice_tableau2])
+            indice_tableau2+=1
+        return tableau_fusionne
+
+    print("tableaux triés par tri fusion")
+    for i in range(len(liste_de_liste)):
+        print(tri_fusion(liste_de_liste[i]))
+
+
+    print("\n\n\n")
+
+    liste_temps_tri_fusion = []                 #liste qui sert à avoir les cordonnées y de la courbes du tri rapide
+
+    #mesure du temps pris pour le tri fusion
+    for i in range(len(liste_de_liste)):
+        l = liste_de_liste[i]
+        temps0, temps1 = 0, 0
+        temps0 = time.perf_counter()
+
+        tri_fusion(liste_de_liste[i])
+        temps1 = time.perf_counter()
+        temps = temps1 - temps0
+        print(f"Le temps mis pour trier {len(l)} éléments par tri fusion est de {temps}s")
+        print(l)
+        liste_temps_tri_fusion.append(temps)
+    #fin mesure du temps pris pour le tri fusion
+    print(liste_temps_tri_fusion)
+def heapsort():
+    """Fonction qui effectue le tri par tas
+    Cette fonction contient les fonctions :
+    - indice_fils_gauche
+    - indice_fils_droit
+    - indice_noeud_pere
+    - permute
+    - tamise"""
+
+    compteur_permutation = 0
+    for i in range(len(liste_de_liste)):
+        arbre = liste_de_liste[i]
+
+
+
+
+
+    def indice_fils_gauche(noeud_pere:int):         #Fonction qui détermine l’indice du fils de gauche par rapport à un nœud père de l’arbre
+                                                    #Note : on ne sait pas mettre de documentation de fonction dans cette f()
+                                                    #documentation qu'on a dans les autres f() ci-dessus ( faire un print(nom_de_la_fonction.__doc__)
+                                                    # pour voir les documentations de fonctions)
+      return (noeud_pere * 2)+ 1
+    def indice_fils_droit(noeud_pere:int):           #Fonction qui détermine l’indice du fils de droite par rapport à un nœud père de l’arbre
+                                                     #Note : nous avons le même problème que la fonction indice_fils_gauche (voir ligne 225 à 227)
+      return (noeud_pere * 2) + 2
+    #Retourne l'indice du noeud pere si il existe (noeud doit être > 0)
+    def indice_noeud_pere(noeud):                      #Fonction qui détermine l’indice du nœud qui a des «enfants » dans l’arbre
+                                                       #Note : Même problème que la fonction indice_fils_droit (voir ligne 230)
+
+      #Si il existe il s'agit de l'arrondi inférieur de (noeud-1)/2
+      return floor((noeud - 1)/2)
+    #permute 2 éléments d'un tableau et incrément la variable globale compteur_permutation à initialiser dans le main
+    def permute(tableau, indice1: int, indice2:int):           #fonction qui permute et compte les permutations effectuées
+                                                                #Note : Même problème que la fonction indice_noeud_pere (voir ligne 234)
+
+
+      print("Permutation de l'élément " + str(indice1) + " avec l'element " + str(indice2))
+      print("**Avant permutation : " + str(tableau))
+      nonlocal compteur_permutation
+      if(indice1 != indice2):
+      #on sauvegarde la valeur de l'indice 1 dans une variable temporaire
+        tmp = tableau[indice1]
+        tableau[indice1] = tableau[indice2]
+        tableau[indice2] = tmp
+        compteur_permutation += 1
+      print("**Apres permutation : " + str(tableau))
+    #Tamise un arbre binaire à partir d'un noeud en parametre
+    #1. on compare le noeud avec le fils droit et le fils gauche (si ils existent)
+    #2. on permute avec la plus grande valeur
+
+    def tamise(arbre,noeud,longueur):
+
+      #On visite le fils droit et le fils gauche
+      print("++Tamisage de " + str(noeud) + " arbre: " + str(arbre))
+      indiceFilsDroit   = indice_fils_droit(noeud)
+      indiceFilsGauche  = indice_fils_gauche(noeud)
+      print("indiceFilsDroit>>" + str(indiceFilsDroit))
+      print("indiceFilsGauche>>" + str(indiceFilsGauche))
+      if(indiceFilsDroit < longueur): # si le fils droit existe
+        if(arbre[indiceFilsDroit] > arbre[indiceFilsGauche]): #Si le fils droit est plus grand que le fils gauche
+          if(arbre[indiceFilsDroit] > arbre[noeud]): #Si le fils droit est plus grand que le noeud tamisé
+            permute(arbre,indiceFilsDroit,noeud)
+        elif(arbre[indiceFilsGauche] > arbre[noeud]): #Si le fils gauche est supérieur au noeud tamisé alors on permute
+          permute(arbre,indiceFilsGauche,noeud)
+      elif(indiceFilsGauche < longueur): #Si le fils gauche existe
+        if(arbre[indiceFilsGauche] > arbre[noeud]): #Si le fils gauche est supérieur au noeud tamisé alors on permute
+          permute(arbre,indiceFilsGauche,noeud)
+      print("++Apres tamisage : " + str(arbre))
+
+
+
+
+    print("démarrage arbre : " + str(arbre))
+
+    #Tamisage initial
+    #on prend le dernier élément de l'arbe qui est une feuille et on recherche son père
+    indiceDuNoeudPere = indice_noeud_pere(len(arbre)-1)
+    #on tamise càd on compare le noeud pere avec le fils droit et le fils gauche
+    #puis on permute avec la plus grande valeur
+    for i in range(indiceDuNoeudPere,-1,-1): #On tamise jusqu'à la racine
+      tamise(arbre,i,len(arbre))
+    permute(arbre,len(arbre)-1,0) #on permute le premier element et le dernier
+    #suite au tamisage c'est la plus grande valeur on la place donc à la fin du tableau
+    #on répete le tamisage
+    for i in range(len(arbre)-1,1,-1):
+      indiceDuNoeudPereDeI = indice_noeud_pere(i-1) #on prend l'élément i de l'arbe qui est une feuille et on recherche son père
+      for j in range(indiceDuNoeudPereDeI,-1,-1): #On tamise jusqu'à la racine
+        tamise(arbre,j,i)
+      permute(arbre,i-1,0)
+    print("resultat final du tri : " + str(arbre))
+    print("nombre de permutation : " + str(compteur_permutation))
+
+def temps_heapsort():
+    """Fonction pour mesurer le temps mis pour effectuer le tri par tas """
+    global liste_temps_tri_par_tas
+    temps0, temps1 = 0, 0
+    temps0 = time.perf_counter()
+
+    heapsort()
+    temps1 = time.perf_counter()
+    temps = temps1 - temps0
+    print(f"Le temps mis pour trier {len(l)} éléments par tri par tas est de {temps}s")
+    print(l)
+    liste_temps_tri_par_tas.append(temps)
+
+
+    print(liste_temps_tri_par_tas)
+
+
+def graphe_meilleur_cas():
+    """Graphe qui affiche les courbes quand les données des tableaux sont déjà triées au départ"""
+
+    for i in range(len(liste_temps_tri_rapide)):
+        temps = liste_temps_tri_rapide[i]
+        nb_elements = liste_itteration[i]
+        print(nb_elements,temps)
+
+    figure, axe = plt.subplots()
+    echelle_nombre_donnee = np.linspace(0, 10_000, 100)
+
+
+    plt.title("Graphe meilleur cas")
+    plt.xlabel("listes de longueur de donnée")
+    plt.ylabel("temps")
+
+    plt.plot(liste_itteration,liste_temps_tri_rapide,label="courbe de tri rapide (meilleur cas)")
+    plt.plot(liste_itteration, liste_temps_tri_fusion, label="courbe de tri fusion (meilleur cas)")
+
+
+    plt.grid()
+    plt.legend()
+    plt.show()
+    plt.savefig("Graphe meilleur cas.png")
+
+def graphe_cas_moyen():
+    """Graphe qui affiche les courbes quand les données des tableaux sont plus ou moins triées au départ"""
+    for i in range(len(liste_temps_tri_rapide)):
+        temps = liste_temps_tri_rapide[i]
+        nb_elements = liste_itteration[i]
+        print(nb_elements,temps)
+
+    figure, axe = plt.subplots()
+    echelle_nombre_donnee = np.linspace(0, 10_000, 100)
+
+    plt.xlabel("listes de longueur de donnée")
+    plt.ylabel("temps")
+
+    plt.plot(liste_itteration,liste_temps_tri_rapide,label="courbe de tri rapide (cas moyen)")
+    plt.plot(liste_itteration, liste_temps_tri_fusion, label="courbe de tri fusion (cas moyen)")
+
+
+    plt.grid()
+    plt.legend()
+    plt.show()
+def graphe_pire_cas():
+    """Graphe qui affiche les courbes quand les données des tableaux sont le moins bien triées aux départ"""
+    for i in range(len(liste_temps_tri_rapide)):
+        temps = liste_temps_tri_rapide[i]
+        nb_elements = liste_itteration[i]
+        print(nb_elements,temps)
+
+    figure, axe = plt.subplots()
+    echelle_nombre_donnee = np.linspace(0, 10_000, 100)
+
+    plt.xlabel("listes de longueur de donnée")
+    plt.ylabel("temps")
+
+    plt.plot(liste_itteration,liste_temps_tri_rapide,label="courbe de tri rapide (pire cas)")
+    plt.plot(liste_itteration, liste_temps_tri_fusion, label="courbe de tri fusion (pire cas)")
+
+
+    plt.grid()
+    plt.legend()
+    plt.show()
+
+def main():
+    """Fonction qui génères les trois graphes en appellant les cas puis les tris puis les graphes"""
+
+    meilleur_cas()
+    quicksort()
+    mergesort()
+
+    print("\n\n\n")
+
+
+    graphe_meilleur_cas()
+
+    cas_moyen()
+    quicksort()
+    mergesort()
+
+    print("\n\n\n")
+
+
+
+    graphe_cas_moyen()
+
+    pire_cas()
+    quicksort()
+    mergesort()
+
+    print("\n\n\n")
+
+
+
+    graphe_pire_cas()
+main()
+
+
+
